@@ -1,0 +1,20 @@
+# --- Core Math & Linear Algebra ---
+# Essential for matrix multiplication, weight initialization, and vectorized activation functions.
+numpy>=1.24.0
+
+# --- Data Handling & Preprocessing ---
+# Used for parsing the Wisconsin Breast Cancer CSV and managing the training/validation split.
+pandas>=2.0.0
+
+# --- Visualization ---
+# Required for generating the mandatory learning curves (Loss and Accuracy over epochs).
+matplotlib>=3.7.0
+
+# --- Optional/Helper ---
+# Useful for advanced dataset visualization and correlation matrices during data exploration.
+seaborn>=0.12.0
+
+# --- Development Tools ---
+# Used for prototyping the math, data exploration, and visualization sandbox.
+notebook
+ipykernel
