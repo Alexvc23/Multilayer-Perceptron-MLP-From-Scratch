@@ -18,8 +18,23 @@ This project implements a Multilayer Perceptron (MLP) entirely from scratch usin
     ├── layer.py          # Dense layer implementation (weights, biases, local gradients)
     ├── loss.py           # Binary Cross-Entropy loss calculation
     ├── metrics.py        # Evaluation metrics like accuracy
-    └── network.py        # MultilayerPerceptron orchestrator class
+    ├── network.py        # MultilayerPerceptron orchestrator class
+    └── scaler.py         # Data standardization (Z-score) and Label Encoding
+
 ```
+
+## Data Preprocessing
+
+Before reaching the mathematical engine, the data undergoes crucial preparation logic located in `src/scaler.py`.
+
+### Standardization (Z-score)
+Features with large magnitudes disproportionately dominate the gradient calculations, preventing gradient descent from converging. The custom `StandardScaler` standardizes input features to have a mean of 0 and a standard deviation of 1 ($z = \frac{x - \mu}{\sigma + \epsilon}$). 
+
+**Data Leakage Prevention:** The mean ($\mu$) and standard deviation ($\sigma$) are calculated explicitly on the **training data only**. These parameters are serialized to a JSON file so that the exact same transformation scaler is applied to the validation data to ensure unbiased evaluation.
+
+### Label Encoding
+Neural networks cannot process strings. The diagnosis label is mapped manually from string values to binary targets (`'M' -> 1`, `'B' -> 0`), conforming to the Binary Cross-Entropy expectation of predicting probabilities between 0 and 1.
+
 
 ## Mathematical Engine & Core Responsibilities
 
