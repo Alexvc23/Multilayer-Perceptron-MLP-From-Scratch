@@ -23,9 +23,16 @@ This project implements a Multilayer Perceptron (MLP) entirely from scratch usin
 
 ```
 
+## Data Splitting
+
+The first phase of the pipeline (`split.py`) partitions the raw Wisconsin breast cancer dataset into distinct training and validation sets.
+- **Reproducibility:** A fixed pseudo-random seed is used to ensure the exact same split across independent runs.
+- **Synchronization:** Manual shuffling of indices before slicing preserves the perfect alignment between features and target labels.
+- **Evaluation:** By setting aside a dedicated validation set (e.g., 20%), we ensure the model can be accurately evaluated on unseen data to detect overfitting.
+
 ## Data Preprocessing
 
-Before reaching the mathematical engine, the data undergoes crucial preparation logic located in `src/scaler.py`.
+After splitting and before reaching the mathematical engine, the data undergoes crucial preparation logic located in `src/scaler.py`.
 
 ### Standardization (Z-score)
 Features with large magnitudes disproportionately dominate the gradient calculations, preventing gradient descent from converging. The custom `StandardScaler` standardizes input features to have a mean of 0 and a standard deviation of 1 ($z = \frac{x - \mu}{\sigma + \epsilon}$). 

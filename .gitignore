@@ -1,1 +1,5 @@
 .venv/
+data/training_data.csv
+.gitignore
+*.prompt.md
+data/validation_data.csv

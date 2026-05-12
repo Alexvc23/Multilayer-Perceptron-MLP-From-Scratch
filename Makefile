@@ -9,6 +9,7 @@ PIP := $(VENV)/bin/bin/pip
 help:
 	@echo "Available commands:"
 	@echo "  setup   : Create virtual environment and install dependencies"
+	@echo "  split   : Run the data splitting script (split.py)"
 	@echo "  train   : Run the training script (train.py)"
 	@echo "  predict : Run the prediction script (predict.py)"
 	@echo "  clean   : Remove virtual environment and cached files"
@@ -27,6 +28,9 @@ $(VENV)/bin/activate: requirements.txt
 	@echo "Setup complete. Use 'source $(VENV)/bin/activate' to enter the environment manually."
 
 # --- Project Execution ---
+split: setup
+	$(PYTHON) split.py
+
 train: setup
 	$(PYTHON) train.py
 
@@ -40,4 +44,4 @@ clean:
 	find . -type d -name "__pycache__" -exec rm -rf {} +
 	@echo "Environment removed."
 
-.PHONY: setup train predict clean help
+.PHONY: setup split train predict clean help
