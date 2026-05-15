@@ -49,16 +49,16 @@ The core of the MLP is housed entirely within the `src/` directory to cleanly se
 
 ### Feedforward Pass
 The forward pass is initiated in `src/network.py` and delegates computation down to each layer:
-1. **`src/layer.py`**: Computes the weighted sum $z = \sum (x_k \cdot w_k) + bias$.
+1. **`src/layer.py`**: Initializes weights (to break symmetry) and biases, then computes the weighted sum $z = \sum (x_k \cdot w_k) + bias$.
 2. **`src/activations.py`**: Applies non-linearity to the linear output $z$. For hidden layers, this is typically the Sigmoid function; for the output layer, it will be Softmax to provide a probabilistic distribution.
 3. **`src/loss.py`**: At the end of the forward pass, the predictions are compared to the actual targets using Binary Cross-Entropy to quantify the network's error.
 
 ### Backpropagation Pass
 The backward pass distributes the error backwards through the network to update the parameters:
 1. **`src/loss.py`**: Determines the initial gradient of the loss with respect to the network's final output.
-2. **`src/layer.py`**: Computes the local gradients. It calculates how much each weight and bias contributed to the error.
+2. **`src/layer.py`**: Computes the local gradients (weight and bias contributions to the error) and applies Gradient Descent to update its parameters.
 3. **`src/activations.py`**: Supplies the derivatives of the activation functions (e.g., Sigmoid prime) needed by the chain rule to pass the gradient through the non-linearities.
-4. **`src/network.py`**: Orchestrates the chain rule across all layers and applies Gradient Descent to update the weights and biases based on the calculated gradients.
+4. **`src/network.py`**: Orchestrates the chain rule across all layers, passing the gradients backward.
 
 ## Constraints & "No-Magic" Rule
 This codebase strictly prohibits black-box machine learning libraries (TensorFlow, PyTorch, Scikit-Learn, etc.).

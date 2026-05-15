@@ -14,15 +14,27 @@ class DenseLayer:
     def __init__(self, input_size: int, output_size: int, random_seed: int = 42):
         """
         Initializes weights and biases for the layer.
+        
+        Why: We initialize weights randomly to break symmetry so each neuron learns 
+        different features. Biases are initialized to carefully chosen small values or zeros.
+        Using a random seed ensures repeatability for our human evaluation.
         """
         np.random.seed(random_seed)
-        pass
+        # Weights initialized around 0 with small variance. Shape: (input_features, output_neurons)
+        self.weights = np.random.randn(input_size, output_size) * 0.1
+        # Biases initialized to zero. Shape: (1, output_neurons)
+        self.biases = np.zeros((1, output_size))
         
     def forward(self, inputs: np.ndarray) -> np.ndarray:
         """
-        Computes the weighted sum of inputs plus bias: z = (W * x) + b
+        Computes the weighted sum of inputs plus bias: z = (x * W) + b
+        
+        This calculates the unactivated output of the neurons. We project the input 
+        signals from the previous layer into the dimensional space of this layer.
         """
-        pass
+        self.inputs = inputs
+        # Z = X * W + b
+        return np.dot(inputs, self.weights) + self.biases
         
     def backward(self, output_gradient: np.ndarray, learning_rate: float) -> np.ndarray:
         """
@@ -30,3 +42,38 @@ class DenseLayer:
         Returns the input gradient to pass to the previous layer.
         """
         pass
+
+if __name__ == "__main__":
+    # --- Manual Validation Block ---
+    # Validates the forward pass math engine.
+    
+    # 1. Define input matrix X shape: (2, 3) 
+    # Batch size of 2, with 3 input features.
+    X = np.array([
+        [1.0, 2.0, 3.0], 
+        [4.0, 5.0, 6.0]
+    ])
+    
+    print("--- Testing DenseLayer Forward Pass ---")
+    layer = DenseLayer(input_size=3, output_size=2)
+    
+    # 2. Overwrite weights and biases manually to match the notebook's test case exactly.
+    layer.weights = np.array([
+        [0.1, 0.2], 
+        [0.3, 0.4], 
+        [0.5, 0.6]
+    ])
+    
+    layer.biases = np.array([[0.5, -0.5]])
+    
+    # 3. Compute the forward pass
+    Z = layer.forward(X)
+    
+    # 4. Assert correctness
+    print(f"X shape: {X.shape}")
+    print(f"Weights shape: {layer.weights.shape}")
+    print(f"Biases shape: {layer.biases.shape}")
+    print(f"Output Z shape: {Z.shape} (Expected: (2, 2))")
+    print("\nOutput Z:")
+    print(Z)
+
