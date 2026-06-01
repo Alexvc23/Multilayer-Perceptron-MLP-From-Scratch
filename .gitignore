@@ -1,4 +1,5 @@
 .venv/
+.myenv/*
 data/training_data.csv
 .gitignore
 *.prompt.md
