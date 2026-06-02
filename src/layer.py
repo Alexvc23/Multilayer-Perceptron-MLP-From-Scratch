@@ -4,6 +4,7 @@ Dense Layer
 This module implements a standard fully connected (dense) layer.
 """
 import numpy as np
+from src.activations import sigmoid, relu
 
 class DenseLayer:
     """
@@ -11,7 +12,7 @@ class DenseLayer:
     input and output nodes. 
     """
     
-    def __init__(self, input_size: int, output_size: int, random_seed: int = 42):
+    def __init__(self, input_size: int, output_size: int, activation_name: str = 'sigmoid', random_seed: int = 42):
         """
         Initializes weights and biases for the layer.
         
@@ -24,17 +25,30 @@ class DenseLayer:
         self.weights = np.random.randn(input_size, output_size) * 0.1
         # Biases initialized to zero. Shape: (1, output_neurons)
         self.biases = np.zeros((1, output_size))
+        self.activation_name = activation_name
         
     def forward(self, inputs: np.ndarray) -> np.ndarray:
         """
-        Computes the weighted sum of inputs plus bias: z = (x * W) + b
+        Executes the forward pass for this layer.
         
-        This calculates the unactivated output of the neurons. We project the input 
-        signals from the previous layer into the dimensional space of this layer.
+        Why:
+        We compute the dot product to combine inputs with their learned importance (weights),
+        add the bias to shift the activation threshold, and finally pass the result 
+        through a non-linear activation function.
         """
         self.inputs = inputs
-        # Z = X * W + b
-        return np.dot(inputs, self.weights) + self.biases
+        # 1. Linear Transformation: Z = X * W + b
+        self.z = np.dot(inputs, self.weights) + self.biases
+        
+        # 2. Non-linear Activation
+        if self.activation_name == 'sigmoid':
+            self.output = sigmoid(self.z)
+        elif self.activation_name == 'relu':
+            self.output = relu(self.z)
+        else:
+            self.output = self.z # Linear
+            
+        return self.output
         
     def backward(self, output_gradient: np.ndarray, learning_rate: float) -> np.ndarray:
         """
@@ -54,8 +68,8 @@ if __name__ == "__main__":
         [4.0, 5.0, 6.0]
     ])
     
-    print("--- Testing DenseLayer Forward Pass ---")
-    layer = DenseLayer(input_size=3, output_size=2)
+    print("--- Testing DenseLayer Forward Pass (Linear) ---")
+    layer = DenseLayer(input_size=3, output_size=2, activation_name='linear')
     
     # 2. Overwrite weights and biases manually to match the notebook's test case exactly.
     layer.weights = np.array([

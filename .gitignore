@@ -5,3 +5,4 @@ data/training_data.csv
 *.prompt.md
 data/validation_data.csv
 src/__pycache__/activations.cpython-312.pyc
+src/__pycache__/layer.cpython-312.pyc

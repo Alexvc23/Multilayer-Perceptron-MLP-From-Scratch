@@ -47,9 +47,12 @@ Neural networks cannot process strings. The diagnosis label is mapped manually f
 
 The core of the MLP is housed entirely within the `src/` directory to cleanly separate execution parsing from pure mathematics.
 
+### Orchestration
+**`src/network.py` (Orchestrator)**: The `MultilayerPerceptron` class supports dynamic network topologies (e.g., passing `[30, 24, 24, 1]` to auto-generate layers) and strings together the sequential forward pipeline. It features a `.summary()` method for parameter diagnostic tracking, and implements a `.save_model()` method for persistence.
+
 ### Feedforward Pass
-The forward pass is initiated in `src/network.py` and delegates computation down to each layer:
-1. **`src/layer.py`**: Initializes weights (to break symmetry) and biases, then computes the weighted sum $z = \sum (x_k \cdot w_k) + bias$.
+The forward pass is initiated by the orchestrator and delegates computation down to each layer:
+1. **`src/layer.py` (Atomic Layer)**: Fully handles reproducible weight and bias generation (using `np.random.seed` to break symetry), computes the linear forward pass ($Z = X \cdot W + b$), applies selected non-linear activations natively, and safely caches forward states (`inputs` and `Z`) which are critical for the upcoming calculus in backpropagation.
 2. **`src/activations.py`**: Applies non-linearity to the linear output $z$. For hidden layers, this is typically the Sigmoid function; for the output layer, it will be Softmax to provide a probabilistic distribution.
 3. **`src/loss.py`**: At the end of the forward pass, the predictions are compared to the actual targets using Binary Cross-Entropy to quantify the network's error.
 
@@ -65,3 +68,4 @@ This codebase strictly prohibits black-box machine learning libraries (TensorFlo
 - **NumPy** is used for dot products and vectorized math.
 - **Pandas** is used purely for CSV ingestion and base manipulation.
 - **Matplotlib** is used exclusively for plotting the learning curves (loss and accuracy over epochs).
+- **Transparent Storage**: To adhere to the "No-Magic" rule, the network's `.save_model()` method strictly utilizes human-readable **JSON serialization** for layer weights and biases, avoiding opaque binary formats like `pickle`.
