@@ -35,6 +35,8 @@ class DenseLayer:
         We compute the dot product to combine inputs with their learned importance (weights),
         add the bias to shift the activation threshold, and finally pass the result 
         through a non-linear activation function.
+
+        return the output of the layer after applying the activation function.
         """
         self.inputs = inputs
         # 1. Linear Transformation: Z = X * W + b
