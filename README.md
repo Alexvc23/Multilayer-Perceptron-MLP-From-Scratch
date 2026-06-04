@@ -54,11 +54,12 @@ The core of the MLP is housed entirely within the `src/` directory to cleanly se
 The forward pass is initiated by the orchestrator and delegates computation down to each layer:
 1. **`src/layer.py` (Atomic Layer)**: Fully handles reproducible weight and bias generation (using `np.random.seed` to break symetry), computes the linear forward pass ($Z = X \cdot W + b$), applies selected non-linear activations natively, and safely caches forward states (`inputs` and `Z`) which are critical for the upcoming calculus in backpropagation.
 2. **`src/activations.py`**: Applies non-linearity to the linear output $z$. For hidden layers, this is typically the Sigmoid function; for the output layer, it will be Softmax to provide a probabilistic distribution.
-3. **`src/loss.py`**: At the end of the forward pass, the predictions are compared to the actual targets using Binary Cross-Entropy to quantify the network's error.
+3. **`src/loss.py`**: At the end of the forward pass, predictions are compared to actual targets using the exact Binary Cross-Entropy (BCE) formula. 
+   - **Numerical Stability**: To prevent catastrophic bounds errors (e.g., `log(0)`) from confident incorrect predictions, probabilities are strictly constrained via clipping to a safe `[1e-15, 1 - 1e-15]` threshold.
 
 ### Backpropagation Pass
 The backward pass distributes the error backwards through the network to update the parameters:
-1. **`src/loss.py`**: Determines the initial gradient of the loss with respect to the network's final output.
+1. **`src/loss.py`**: Computes the derivative of the BCE loss with respect to the network's final output predictions ($\frac{\partial E}{\partial p_n}$). This explicit initial gradient jumpstarts the chain rule, sending massive error feedback when the network is confidently wrong.
 2. **`src/layer.py`**: Computes the local gradients (weight and bias contributions to the error) and applies Gradient Descent to update its parameters.
 3. **`src/activations.py`**: Supplies the derivatives of the activation functions (e.g., Sigmoid prime) needed by the chain rule to pass the gradient through the non-linearities.
 4. **`src/network.py`**: Orchestrates the chain rule across all layers, passing the gradients backward.
