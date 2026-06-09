@@ -98,5 +98,15 @@ class MultilayerPerceptron:
     def backward(self, loss_grad: np.ndarray, learning_rate: float):
         """
         Executes the backpropagation pass to update weights and biases based on the error.
+        
+        Why backwards?
+        The Chain Rule requires us to start with the error at the final output (loss_grad) 
+        and pass the derivative signal backwards through each layer. Each layer uses the 
+        gradient from the layer ahead of it to calculate its own weight/bias adjustments, 
+        and then computes the gradient for the layer behind it.
         """
-        pass
+        current_gradient = loss_grad
+        
+        # Iterate through layers in reverse order 
+        for layer in reversed(self.layers):
+            current_gradient = layer.backward(current_gradient, learning_rate)

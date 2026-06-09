@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mlp_scratch"
+version = "0.1.0"
+description = "Multilayer Perceptron from scratch"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "numpy",
+    "pandas",
+    "matplotlib",
+    "seaborn"
+]
+
+[tool.setuptools]
+packages = ["src"]

@@ -6,3 +6,16 @@ data/training_data.csv
 data/validation_data.csv
 src/__pycache__/activations.cpython-312.pyc
 src/__pycache__/layer.cpython-312.pyc
+src/UNKNOWN.egg-info/dependency_links.txt
+.gitignore
+src/UNKNOWN.egg-info/SOURCES.txt
+.gitignore
+.gitignore
+mlp_scratch.egg-info/top_level.txt
+mlp_scratch.egg-info/SOURCES.txt
+mlp_scratch.egg-info/requires.txt
+mlp_scratch.egg-info/PKG-INFO
+mlp_scratch.egg-info/dependency_links.txt
+src/__pycache__/__init__.cpython-312.pyc
+src/UNKNOWN.egg-info/PKG-INFO
+src/UNKNOWN.egg-info/top_level.txt

@@ -4,7 +4,7 @@ Dense Layer
 This module implements a standard fully connected (dense) layer.
 """
 import numpy as np
-from src.activations import sigmoid, relu
+from src.activations import sigmoid, relu, sigmoid_prime, relu_prime
 
 class DenseLayer:
     """
@@ -56,8 +56,43 @@ class DenseLayer:
         """
         Calculates the local gradient for backpropagation and applies Gradient Descent.
         Returns the input gradient to pass to the previous layer.
+        
+        Why: 
+        We use the Chain Rule here. We take the gradient from the layer ahead (`output_gradient`),
+        multiply it by the derivative of our activation function to get `dZ` (how wrong our linear combo was).
+        Then we use `dZ` to find out how to adjust Weights (`dW`) and Biases (`db`). 
+        Finally we compute `dA_prev` to pass backwards to the preceding layer.
         """
-        pass
+        m = self.inputs.shape[0]
+        # ──────────────────────────────────────────────
+        # 1. Calculate Local Error (dZ)
+        if self.activation_name == 'sigmoid':
+            d_activation = sigmoid_prime(self.z)
+        elif self.activation_name == 'relu':
+            d_activation = relu_prime(self.z)
+        else:
+            d_activation = 1.0  # Linear derivative
+            
+        #! Calculate the local error for this layer by applying the chain rule.
+        # The chain rule multiplication: dA_next * activation'(Z)
+        dZ = output_gradient * d_activation
+        # ──────────────────────────────────────────────────────────────
+        #!2. Calculate Weight Gradient (dW) how much we should adjust the weights(the ingredients) to reduce the error.
+        # Transposing self.inputs nicely aligns (m x in_nodes)^T dot (m x out_nodes) = (in_nodes x out_nodes)
+        dW = (1 / m) * np.dot(self.inputs.T, dZ)
+        # ──────────────────────────────────────────────────────────────
+        # 3. Calculate Bias Gradient (db)
+        db = (1 / m) * np.sum(dZ, axis=0, keepdims=True)
+        # ──────────────────────────────────────────────────────────────
+        # 4. Calculate error to pass down the chain (dA_prev)
+        dA_prev = np.dot(dZ, self.weights.T)
+        # ──────────────────────────────────────────────────────────────
+        # 5. Gradient Descent Parameter Updates
+        self.weights -= learning_rate * dW
+        self.biases -= learning_rate * db
+        
+        # Return the error to pass to the previous layer (dA_prev)
+        return dA_prev
 
 if __name__ == "__main__":
     # --- Manual Validation Block ---
