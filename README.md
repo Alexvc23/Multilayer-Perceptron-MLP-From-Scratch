@@ -12,7 +12,9 @@ This project implements a Multilayer Perceptron (MLP) entirely from scratch usin
 ├── models/               # Directory where the trained model layout and weights are saved
 ├── split.py              # Entry script to partition data
 ├── train.py              # Entry script for the learning phase (training loop)
-├── predict.py            # Entry script to load model and evaluate on validation data
+├── predict.py            # Entry script to load model and evaluate on validation data    
+├── doc/                  # Jupyter notebooks explaining the math from scratch
+    │   └── 07_backpropagation_math.ipynb # Interactive chain rule and matrix calculus derivation
 └── src/                  # Core mathematical engine
     ├── activations.py    # Non-linear activation functions (Sigmoid, Softmax) and their derivatives
     ├── layer.py          # Dense layer implementation (weights, biases, local gradients)
@@ -20,7 +22,6 @@ This project implements a Multilayer Perceptron (MLP) entirely from scratch usin
     ├── metrics.py        # Evaluation metrics like accuracy
     ├── network.py        # MultilayerPerceptron orchestrator class
     └── scaler.py         # Data standardization (Z-score) and Label Encoding
-
 ```
 
 ## Data Splitting
@@ -58,11 +59,11 @@ The forward pass is initiated by the orchestrator and delegates computation down
    - **Numerical Stability**: To prevent catastrophic bounds errors (e.g., `log(0)`) from confident incorrect predictions, probabilities are strictly constrained via clipping to a safe `[1e-15, 1 - 1e-15]` threshold.
 
 ### Backpropagation Pass
-The backward pass distributes the error backwards through the network to update the parameters:
+The backward pass distributes the error backwards through the network to update the parameters via the Chain Rule:
 1. **`src/loss.py`**: Computes the derivative of the BCE loss with respect to the network's final output predictions ($\frac{\partial E}{\partial p_n}$). This explicit initial gradient jumpstarts the chain rule, sending massive error feedback when the network is confidently wrong.
-2. **`src/layer.py`**: Computes the local gradients (weight and bias contributions to the error) and applies Gradient Descent to update its parameters.
-3. **`src/activations.py`**: Supplies the derivatives of the activation functions (e.g., Sigmoid prime) needed by the chain rule to pass the gradient through the non-linearities.
-4. **`src/network.py`**: Orchestrates the chain rule across all layers, passing the gradients backward.
+2. **`src/network.py`**: Orchestrates the chain rule across all layers by iterating through the topology in reverse (`reversed(self.layers)`), propagating the error signal ($dA$) backwards.
+3. **`src/layer.py`**: Computes the local gradients ($dZ$) by multiplying the upstream error by the activation derivative. It calculates parameter gradients across the batch ($dW = \frac{1}{m} A_{prev}^T \cdot dZ$, and $db$), applies Gradient Descent to update its parameters, and calculates the error for the preceding layer ($dA_{prev} = dZ \cdot W^T$) properly aligning the matrix shapes via transposes.
+4. **`src/activations.py`**: Supplies the derivatives of the activation functions (e.g., Sigmoid prime, ReLU prime) needed by the layer to pass the gradient through the non-linearities.
 
 ## Constraints & "No-Magic" Rule
 This codebase strictly prohibits black-box machine learning libraries (TensorFlow, PyTorch, Scikit-Learn, etc.).
