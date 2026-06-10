@@ -19,3 +19,4 @@ mlp_scratch.egg-info/dependency_links.txt
 src/__pycache__/__init__.cpython-312.pyc
 src/UNKNOWN.egg-info/PKG-INFO
 src/UNKNOWN.egg-info/top_level.txt
+src/__pycache__/loss.cpython-312.pyc
