@@ -55,12 +55,12 @@ def train_model():
     # We use two hidden layers to satisfy architectural requirements.
     topology = [X_train.shape[1], 32, 32, 1]
     mlp = MultilayerPerceptron(
-        topology, hidden_activation="sigmoid", output_activation="sigmoid"
+        topology, hidden_activation="relu", output_activation="sigmoid"
     )
     mlp.summary()
 
     # 4. Hyperparameters
-    epochs = 1000
+    epochs = 12500
     learning_rate = 0.1
     history = {"loss": [], "val_loss": [], "acc": [], "val_acc": []}
 
@@ -72,7 +72,7 @@ def train_model():
         y_pred_train = mlp.forward(X_train)
         train_loss = binary_cross_entropy(y_train, y_pred_train)
 
-        # --- Backward Pass & Task 5 (Weight Updates) ---
+        # --- Backward Pass (Weight Updates) ---
         # We calculate the initial gradient of the loss with respect to the output.
         loss_grad = binary_cross_entropy_prime(y_train, y_pred_train)
         # mlp.backward propagates this signal and updates weights via Gradient Descent.
@@ -98,8 +98,11 @@ def train_model():
             )
 
     # 6. Finalization
+    # Save the trained model's architecture and weights for future inference or analysis.
     os.makedirs("models", exist_ok=True)
     mlp.save_model("models/mlp_model.json")
+
+    # Visualize training progress with learning curves to diagnose overfitting and confirm training dynamics.
     plot_learning_curves(history)
 
 

@@ -22,3 +22,11 @@ src/UNKNOWN.egg-info/top_level.txt
 src/__pycache__/loss.cpython-312.pyc
 .clauderules/copilot-instructions.md
 doc/models/scaler.json
+__pycache__/train.cpython-312.pyc
+doc/learning_curves.png
+.gitignore
+doc/models/mlp_model.json
+models/mlp_model.json
+.gitignore
+learning_curves.png
+models/scaler.json
