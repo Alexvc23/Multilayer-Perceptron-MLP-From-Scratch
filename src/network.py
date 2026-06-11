@@ -13,7 +13,7 @@ class MultilayerPerceptron:
     Main Neural Network class that coordinates layers, calculates the full forward pass,
     and iterates weight updates via backpropagation.
     """
-    
+
     def __init__(self, topology: list, hidden_activation: str = 'sigmoid', output_activation: str = 'sigmoid'):
         """
         Initializes the network based on a list defining the size of each layer.
@@ -27,19 +27,21 @@ class MultilayerPerceptron:
         non-linear boundaries, though it risks overfitting.
         """
         self.layers = []
-        
+
         # Iterate through the topology to connect each layer i to layer i+1
+        # where  i is the index of the current layer and i+1 is the index of the next layer.
+        # and i ranges from 0 to len(topology) - 2 because we are connecting layer i to layer i+1, and the last layer is at index len(topology) - 1.
         for i in range(len(topology) - 1):
             input_size = topology[i]
             output_size = topology[i + 1]
-            
-            # The final layer typically uses a specific activation (like Sigmoid or Softmax) 
+
+            # The final layer typically uses a specific activation (like Sigmoid or Softmax)
             is_final_layer = (i == len(topology) - 2)
             activation = output_activation if is_final_layer else hidden_activation
-            
+
             layer = DenseLayer(input_size, output_size, activation_name=activation)
             self.layers.append(layer)
-        
+
     def forward(self, x: np.ndarray) -> np.ndarray:
         """
         Passes the input data sequentially through all layers.
@@ -59,18 +61,18 @@ class MultilayerPerceptron:
         print("=" * 60)
         print(f"{'Layer (Type)':<20} {'Shape (In, Out)':<20} {'Param #':<15}")
         print("=" * 60)
-        
+
         total_params = 0
         for i, layer in enumerate(self.layers):
             layer_type = f"Dense-{i+1} ({layer.activation_name})"
             shape_str = f"({layer.weights.shape[0]}, {layer.weights.shape[1]})"
-            
+
             layer_params = layer.weights.size + layer.biases.size
             total_params += layer_params
-            
+
             print(f"{layer_type:<20} {shape_str:<20} {layer_params:<15}")
             print("-" * 60)
-            
+
         print(f"Total params: {total_params}")
         print("=" * 60)
 
@@ -82,7 +84,7 @@ class MultilayerPerceptron:
             "topology": [self.layers[0].weights.shape[0]] + [layer.weights.shape[1] for layer in self.layers],
             "layers": []
         }
-        
+
         for layer in self.layers:
             layer_data = {
                 "activation": layer.activation_name,
@@ -90,11 +92,11 @@ class MultilayerPerceptron:
                 "biases": layer.biases.tolist()
             }
             model_data["layers"].append(layer_data)
-            
+
         with open(filepath, 'w') as f:
             json.dump(model_data, f, indent=4)
         print(f"Model successfully saved to {filepath}")
-        
+
     def backward(self, loss_grad: np.ndarray, learning_rate: float):
         """
         Executes the backpropagation pass to update weights and biases based on the error.
@@ -106,7 +108,7 @@ class MultilayerPerceptron:
         and then computes the gradient for the layer behind it.
         """
         current_gradient = loss_grad
-        
-        # Iterate through layers in reverse order 
+
+        # Iterate through layers in reverse order
         for layer in reversed(self.layers):
             current_gradient = layer.backward(current_gradient, learning_rate)
