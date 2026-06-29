@@ -13,6 +13,7 @@ help:
 	@echo "  train   : Run the training script (train.py)"
 	@echo "  predict : Run the prediction script (predict.py)"
 	@echo "  clean   : Remove virtual environment and cached files"
+	@echo "  clean_model : Remove model files"
 	@echo "  help    : Show this help message (default)"
 
 # --- Environment Setup ---
@@ -36,6 +37,10 @@ train: setup
 
 predict: setup
 	$(PYTHON) predict.py
+clean_model:
+	@echo "Cleaning up model files..."
+	rm -rf model_data
+	@echo "Model files removed."
 
 # --- Cleanup ---
 clean:
@@ -44,4 +49,4 @@ clean:
 	find . -type d -name "__pycache__" -exec rm -rf {} +
 	@echo "Environment removed."
 
-.PHONY: setup split train predict clean help
+.PHONY: setup split train predict clean help clean_model
