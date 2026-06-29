@@ -2,7 +2,7 @@ import numpy as np
 import json
 import os
 
-def encode_labels(y):
+def encode_labels(y)-> np.ndarray:
     """
     Converts categorical string labels into numerical binary targets.
     
