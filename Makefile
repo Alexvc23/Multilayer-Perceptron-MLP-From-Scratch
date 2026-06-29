@@ -39,7 +39,7 @@ predict: setup
 	$(PYTHON) predict.py
 clean_model:
 	@echo "Cleaning up model files..."
-	rm -rf model_data
+	rm -rf models learning_curves.png
 	@echo "Model files removed."
 
 # --- Cleanup ---
