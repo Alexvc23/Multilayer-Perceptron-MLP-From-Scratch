@@ -47,21 +47,22 @@ def train_model():
     scaler.save("models/scaler.json")
 
     # Encode labels (M=1, B=0) for mathematical compatibility with BCE loss.
+    # reshape(-1, 1) = (-1 = take all rows, 1 = single column) to match network output shape.
     y_train = encode_labels(y_train_raw).reshape(-1, 1)
     y_val = encode_labels(y_val_raw).reshape(-1, 1)
 
     # 3. Initialize Network
-    # Topology: [Input (30 features), Hidden1 (32), Hidden2 (32), Output (1)]
+    # Topology: [Input (30 features), Hidden1 (24), Hidden2 (24), Output (1)]
     # We use two hidden layers to satisfy architectural requirements.
-    topology = [X_train.shape[1], 32, 32, 1]
+    topology = [X_train.shape[1], 24, 24, 1]
     mlp = MultilayerPerceptron(
         topology, hidden_activation="relu", output_activation="sigmoid"
     )
     mlp.summary()
 
     # 4. Hyperparameters
-    epochs = 12500
-    learning_rate = 0.1
+    epochs = 6000 
+    learning_rate = 0.7
     history = {"loss": [], "val_loss": [], "acc": [], "val_acc": []}
 
     print(f"\nStarting training for {epochs} epochs...")
