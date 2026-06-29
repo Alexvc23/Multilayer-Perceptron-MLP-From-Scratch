@@ -14,7 +14,7 @@ class MultilayerPerceptron:
     and iterates weight updates via backpropagation.
     """
 
-    def __init__(self, topology: list, hidden_activation: str = 'sigmoid', output_activation: str = 'sigmoid'):
+    def __init__(self, topology: list, hidden_activation: str = 'relu', output_activation: str = 'sigmoid'):
         """
         Initializes the network based on a list defining the size of each layer.
         
