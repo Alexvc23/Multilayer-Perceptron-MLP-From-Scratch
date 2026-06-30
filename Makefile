@@ -33,7 +33,7 @@ split: setup
 	$(PYTHON) split.py
 
 train: setup
-	$(PYTHON) train.py
+	$(PYTHON) train.py --hidden 24 12  --epochs 6000 --lr 0.7
 
 predict: setup
 	$(PYTHON) predict.py

@@ -7,6 +7,9 @@ This script:
 3) plots the learning curves (loss and accuracy)
 and persists the trained topology and weights to the models/ directory.
 """
+from ast import arg
+import argparse
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -16,7 +19,7 @@ from src.scaler import StandardScaler, encode_labels
 from src.loss import binary_cross_entropy, binary_cross_entropy_prime
 
 
-def train_model():
+def train_model(hidden_layers: list = [24, 24], epochs: int = 6000, learning_rate: float = 0.7):
     """
     Executes the training phase on the partitioned training data.
 
@@ -54,15 +57,15 @@ def train_model():
     # 3. Initialize Network
     # Topology: [Input (30 features), Hidden1 (24), Hidden2 (24), Output (1)]
     # We use two hidden layers to satisfy architectural requirements.
-    topology = [X_train.shape[1], 24, 24, 1]
+    topology = [X_train.shape[1]] + hidden_layers + [1]
     mlp = MultilayerPerceptron(
         topology, hidden_activation="relu", output_activation="sigmoid"
     )
     mlp.summary()
 
     # 4. Hyperparameters
-    epochs = 6000 
-    learning_rate = 0.7
+    epochs = epochs
+    learning_rate = learning_rate
     history = {"loss": [], "val_loss": [], "acc": [], "val_acc": []}
 
     print(f"\nStarting training for {epochs} epochs...")
@@ -146,4 +149,27 @@ def plot_learning_curves(history: dict):
 
 if __name__ == "__main__":
     print("Running training phase...")
-    train_model()
+
+    parser = argparse.ArgumentParser(description="Train Neural Network")
+
+    # 1. set up hidden layer sizes as a list of integers 
+    # Handle the list (nargs='+' allows multiple numbers)
+    parser.add_argument('--hidden', nargs='+', type=int, default=[24, 24], 
+                        help='List of hidden layer sizes (e.g. --hidden 24 24)')
+    
+    # 2. set up epochs as an integer 
+    # Handle the integers
+    parser.add_argument('--epochs', type=int, default=6000)
+
+    # 3. set up learning rate as a float
+    # Handle the floats
+    parser.add_argument('--lr', type=float, default=0.7, dest='learning_rate')
+
+    args = parser.parse_args()
+
+    # Call the training function with parsed arguments
+    train_model(
+        hidden_layers=args.hidden, 
+        epochs=args.epochs, 
+        learning_rate=args.learning_rate
+    )

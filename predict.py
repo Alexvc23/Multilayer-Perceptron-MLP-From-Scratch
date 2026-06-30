@@ -139,5 +139,3 @@ def predict_model():
 if __name__ == "__main__":
     print("Running prediction phase...\n\n")
     predict_model()
-    # lModel = load_model()
-    # lReseult = load_scaler()
