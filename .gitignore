@@ -31,3 +31,4 @@ models/mlp_model.json
 learning_curves.png
 models/scaler.json
 mlp_scratch.egg-info
+src/__pycache__/scaler.cpython-312.pyc

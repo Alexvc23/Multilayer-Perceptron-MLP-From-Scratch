@@ -18,3 +18,7 @@ seaborn>=0.12.0
 # Used for prototyping the math, data exploration, and visualization sandbox.
 notebook
 ipykernel
+
+
+# --- Color Output ---
+colorama

@@ -29,7 +29,7 @@ class StandardScaler:
         # State variables to hold the mean and standard deviation matrices
         self.mean_ = None
         self.std_ = None
-        
+
         # Epsilon prevents division-by-zero if a feature has zero variance (constant value)
         self.epsilon = 1e-8
 
@@ -46,11 +46,11 @@ class StandardScaler:
             X (np.ndarray): Training inputs of shape (n_samples, n_features)
         """
         X = np.array(X, dtype=float)
-        
+
         # Calculate mean across rows (axis=0) to get average for each feature (column)
         # Math: mu = 1/N * sum(x_i)
         self.mean_ = np.mean(X, axis=0)
-        
+
         # Calculate standard deviation across rows (axis=0)
         # Math: sigma = sqrt( 1/N * sum((x_i - mu)^2) )
         self.std_ = np.std(X, axis=0)
@@ -70,13 +70,13 @@ class StandardScaler:
         """
         if self.mean_ is None or self.std_ is None:
             raise ValueError("Scaler has not been fitted yet. Call fit() first.")
-            
+
         X = np.array(X, dtype=float)
-        
+
         # Math: z = (x - mu) / (sigma + epsilon)
         # Vectorized operation applies the formula to the whole matrix efficiently
         X_scaled = (X - self.mean_) / (self.std_ + self.epsilon)
-        
+
         return X_scaled
 
     def save(self, filepath):
@@ -88,30 +88,61 @@ class StandardScaler:
         """
         if self.mean_ is None or self.std_ is None:
             raise ValueError("Scaler is not fitted, nothing to save.")
-            
+
         data = {
             # Convert NumPy arrays to lists since JSON cannot natively serialize ndarrays
             'mean': self.mean_.tolist(),
             'std': self.std_.tolist()
         }
-        
+
         os.makedirs(os.path.dirname(os.path.abspath(filepath)) or '.', exist_ok=True)
-        
+
         with open(filepath, 'w') as f:
             json.dump(data, f, indent=4)
 
-    def load(self, filepath):
+    # ──────────────────────────────────────────────────────────────────────────────
+
+    def load(self, filepath = "models/scaler.json"):
         """
         Deserializes the mean and standard deviation from a JSON file.
         
         Why: Allows instantiating an already-fitted scaler for inference/prediction.
+
+        Loads the starndardization parameters (mean and std dev) from a json file.
+
+        Why we load these paremeters instead of recalculating them :
+        # ──────────────────────────────────────────────────────────
+        To prevent data laeakage. In Phase 4 (Prediction/Validation), we must
+        transform the new data using the exact same Mean (mu) and Standard Deviation
+        (sigma) that were calculated from the training data in Phase 3. This ensures
+        that the model's predictions are based on the same feature scaling it was trained on
+
+        Parameters:
+            filepath (str): Path to the JSON file containing the scaler parameters.
+        Returns:
+            tuple[np.ndarray, np.ndarray]: A tuple containing the mean and standard deviation arrays.
         """
-        with open(filepath, 'r') as f:
-            data = json.load(f)
-            
-        # Parse standard Python lists back into mathematical vectors (numpy arrays)
-        self.mean_ = np.array(data['mean'], dtype=float)
-        self.std_ = np.array(data['std'], dtype=float)
+        try:
+            with open(filepath, 'r') as f:
+                data = json.load(f)
+
+            # Parse standard Python lists back into mathematical vectors (numpy arrays)
+            self.mean_ = np.array(data['mean'], dtype=float)
+            self.std_ = np.array(data['std'], dtype=float)
+
+        except FileNotFoundError as e:
+            print(f"File not found. Ensure training was completed: {e}")
+            return np.array([]), np.array([])
+
+        except KeyError as e:
+            print(f"Missing key in scaler JSON : {e}")
+            return np.array([]), np.array([])
+
+        except json.JSONDecodeError as e:
+            print(f"Error decoding JSON. Ensure the file is valid: {e}")
+            return np.array([]), np.array([])
+
+# ──────────────────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
     # Test Block to prove mathematical correctness (can be run directly with `python src/scaler.py`)
