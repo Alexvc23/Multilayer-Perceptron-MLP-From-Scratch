@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 import os
 from src.network import MultilayerPerceptron
 from src.scaler import StandardScaler, encode_labels
-from src.loss import binary_cross_entropy, binary_cross_entropy_prime
+from src.loss import categorical_cross_entropy
 
 
 def train_model(hidden_layers: list = [24, 24], epochs: int = 6000, learning_rate: float = 0.7):
@@ -49,10 +49,9 @@ def train_model(hidden_layers: list = [24, 24], epochs: int = 6000, learning_rat
     X_val = scaler.transform(X_val_raw)
     scaler.save("models/scaler.json")
 
-    # Encode labels (M=1, B=0) for mathematical compatibility with BCE loss.
-    # reshape(-1, 1) = (-1 = take all rows, 1 = single column) to match network output shape.
-    y_train = encode_labels(y_train_raw).reshape(-1, 1)
-    y_val = encode_labels(y_val_raw).reshape(-1, 1)
+    # Encode labels as one-hot vectors so they match the two-unit softmax output.
+    y_train = encode_labels(y_train_raw)
+    y_val = encode_labels(y_val_raw)
 
     # 3. Initialize Network
     # Topology: [Input (30 features), Hidden1 (24), Hidden2 (24), Output (2)]
@@ -74,17 +73,18 @@ def train_model(hidden_layers: list = [24, 24], epochs: int = 6000, learning_rat
     for epoch in range(epochs):
         # --- Forward Pass ---
         y_pred_train = mlp.forward(X_train)
-        train_loss = binary_cross_entropy(y_train, y_pred_train)
+        train_loss = categorical_cross_entropy(y_train, y_pred_train)
 
         # --- Backward Pass (Weight Updates) ---
-        # We calculate the initial gradient of the loss with respect to the output.
-        loss_grad = binary_cross_entropy_prime(y_train, y_pred_train)
-        # mlp.backward propagates this signal and updates weights via Gradient Descent.
+        # For softmax + categorical cross-entropy, the output-layer gradient collapses to dZ = P - Y.
+        # This is the exact signal the output layer needs before the chain rule continues backward.
+        loss_grad = y_pred_train - y_train
+        # mlp.backward propagates this simplified gradient and updates weights via Gradient Descent.
         mlp.backward(loss_grad, learning_rate)
 
         # --- Validation & Metrics ---
         y_pred_val = mlp.forward(X_val)
-        val_loss = binary_cross_entropy(y_val, y_pred_val)
+        val_loss = categorical_cross_entropy(y_val, y_pred_val)
 
         # Calculate accuracy for tracking
         train_acc = np.mean((y_pred_train > 0.5) == y_train)

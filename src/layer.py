@@ -72,6 +72,10 @@ class DenseLayer:
             d_activation = sigmoid_prime(self.z)
         elif self.activation_name == 'relu':
             d_activation = relu_prime(self.z)
+        elif self.activation_name == 'softmax':
+            # Softmax is paired with categorical cross-entropy, so the output-layer
+            # gradient is already simplified to dZ = P - Y before reaching this layer.
+            d_activation = 1.0
         else:
             d_activation = 1.0  # Linear derivative
             
