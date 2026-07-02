@@ -33,3 +33,4 @@ models/scaler.json
 mlp_scratch.egg-info
 src/__pycache__/scaler.cpython-312.pyc
 src/__pycache__/scaler.cpython-312.pyc
+src/__pycache__
