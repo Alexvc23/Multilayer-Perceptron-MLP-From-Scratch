@@ -38,6 +38,7 @@ def categorical_cross_entropy_prime(y_true: np.ndarray, y_pred: np.ndarray) -> n
     """
     epsilon = 1e-15
     y_pred_clipped = np.clip(y_pred, epsilon, 1 - epsilon)
+    #shape[0] means the number of samples in the batch, which is used to normalize the gradient.
     N = y_true.shape[0]
     return -(y_true / y_pred_clipped) / N
 

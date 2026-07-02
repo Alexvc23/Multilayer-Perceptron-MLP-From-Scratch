@@ -73,18 +73,18 @@ def train_model(hidden_layers: list = [24, 24], epochs: int = 6000, learning_rat
 
     # 5. Training Loop
     for epoch in range(epochs):
-        # --- Forward Pass ---
+        #! --- Forward Pass ---
         y_pred_train = mlp.forward(X_train)
         train_loss = categorical_cross_entropy(y_train, y_pred_train)
 
-        # --- Backward Pass (Weight Updates) ---
+        #! --- Backward Pass (Weight Updates) ---
         # For softmax + categorical cross-entropy, the output-layer gradient collapses to dZ = P - Y.
         # This is the exact signal the output layer needs before the chain rule continues backward.
         loss_grad = y_pred_train - y_train
         # mlp.backward propagates this simplified gradient and updates weights via Gradient Descent.
         mlp.backward(loss_grad, learning_rate)
 
-        # --- Validation & Metrics ---
+        #! --- Validation & Metrics ---
         y_pred_val = mlp.forward(X_val)
         val_loss = categorical_cross_entropy(y_val, y_pred_val)
 
@@ -108,11 +108,11 @@ def train_model(hidden_layers: list = [24, 24], epochs: int = 6000, learning_rat
             )
 
     # 6. Finalization
-    # Save the trained model's architecture and weights for future inference or analysis.
+    # !Save the trained model's architecture and weights for future inference or analysis.
     os.makedirs("models", exist_ok=True)
     mlp.save_model("models/mlp_model.json")
 
-    # Visualize training progress with learning curves to diagnose overfitting and confirm training dynamics.
+    # !Visualize training progress with learning curves to diagnose overfitting and confirm training dynamics.
     plot_learning_curves(history)
 
 
