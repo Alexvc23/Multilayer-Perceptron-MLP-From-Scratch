@@ -102,7 +102,7 @@ def train_model(hidden_layers: list = [24, 24], epochs: int = 6000, learning_rat
 
         if epoch % 100 == 0 or epoch == epochs - 1:
             print(
-                f"Epoch {epoch:4d}/{epochs} | Loss: {train_loss:.4f} | Val Loss: {val_loss:.4f} | Val Acc: {val_acc:.4f}"
+                f"Epoch {epoch:4d}/{epochs} | Loss: {train_loss:.4f} | Acc: {train_acc:.4f} | Val Loss: {val_loss:.4f} | Val Acc: {val_acc:.4f}"
             )
 
     # 6. Finalization
