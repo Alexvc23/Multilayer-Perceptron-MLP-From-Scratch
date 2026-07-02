@@ -14,12 +14,12 @@ class MultilayerPerceptron:
     and iterates weight updates via backpropagation.
     """
 
-    def __init__(self, topology: list, hidden_activation: str = 'relu', output_activation: str = 'sigmoid'):
+    def __init__(self, topology: list, hidden_activation: str = 'relu', output_activation: str = 'softmax'):
         """
         Initializes the network based on a list defining the size of each layer.
         
         Args:
-            topology: A list of integers (e.g., [30, 24, 24, 1]).
+            topology: A list of integers (e.g., [30, 24, 24, 2]).
             
         Why dynamically construct layers?
         This allows the human developer (you) to easily experiment with network capacity.
