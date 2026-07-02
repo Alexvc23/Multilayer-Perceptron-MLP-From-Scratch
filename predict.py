@@ -92,7 +92,7 @@ def predict_model():
     model = MultilayerPerceptron(
         topology=loaded_model["topology"],
         hidden_activation="relu",
-        output_activation="sigmoid"
+        output_activation="softmax"
     )
     print(
         colorama.Style.BRIGHT

@@ -4,7 +4,7 @@ Dense Layer
 This module implements a standard fully connected (dense) layer.
 """
 import numpy as np
-from src.activations import sigmoid, relu, sigmoid_prime, relu_prime
+from src.activations import sigmoid, relu, softmax, sigmoid_prime, relu_prime
 
 class DenseLayer:
     """
@@ -47,6 +47,8 @@ class DenseLayer:
             self.output = sigmoid(self.z)
         elif self.activation_name == 'relu':
             self.output = relu(self.z)
+        elif self.activation_name == 'softmax':
+            self.output = softmax(self.z)
         else:
             self.output = self.z # Linear
             

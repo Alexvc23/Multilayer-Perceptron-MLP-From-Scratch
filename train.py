@@ -55,11 +55,11 @@ def train_model(hidden_layers: list = [24, 24], epochs: int = 6000, learning_rat
     y_val = encode_labels(y_val_raw).reshape(-1, 1)
 
     # 3. Initialize Network
-    # Topology: [Input (30 features), Hidden1 (24), Hidden2 (24), Output (1)]
+    # Topology: [Input (30 features), Hidden1 (24), Hidden2 (24), Output (2)]
     # We use two hidden layers to satisfy architectural requirements.
-    topology = [X_train.shape[1]] + hidden_layers + [1]
+    topology = [X_train.shape[1]] + hidden_layers + [2]
     mlp = MultilayerPerceptron(
-        topology, hidden_activation="relu", output_activation="sigmoid"
+        topology, hidden_activation="relu", output_activation="softmax"
     )
     mlp.summary()
 
