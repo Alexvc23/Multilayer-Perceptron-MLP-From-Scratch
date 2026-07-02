@@ -9,10 +9,9 @@ import json
 import pandas as pd
 import numpy as np
 import colorama
-from src.activations import sigmoid
 from src.network import MultilayerPerceptron
 from src.scaler import StandardScaler, encode_labels
-from src.loss import binary_cross_entropy
+from src.loss import categorical_cross_entropy
 
 
 def load_model(filepath: str = "models/mlp_model.json") -> dict:
@@ -84,8 +83,8 @@ def predict_model():
     # av - apply standardization to the validation features using the loaded scaler parameters
     x_val = scaler.transform(x_val)
 
-    # av - Hot encoding the validation labes, - 1 means all the rows and 1 means column 1
-    y_val_encoded = encode_labels(y_val).reshape(-1, 1)
+    # One-hot encode labels so they match the softmax output shape.
+    y_val_encoded = encode_labels(y_val)
 
     # av - initialize network classe to store our previously
     # loaded model with its weights and biases ect
@@ -118,9 +117,11 @@ def predict_model():
 
     print(f"Shape of predicted values: {y_pred_val.shape}")
 
-    # av - we calculate the loss on the validation data using the binary cross entropy loss function
-    val_loss = binary_cross_entropy(y_val_encoded, y_pred_val)
-    val_acc = np.mean((y_pred_val > 0.5) == y_val_encoded)
+    # av - we calculate the loss on the validation data using categorical cross entropy
+    val_loss = categorical_cross_entropy(y_val_encoded, y_pred_val)
+    val_pred_classes = np.argmax(y_pred_val, axis=1)
+    val_true_classes = np.argmax(y_val_encoded, axis=1)
+    val_acc = np.mean(val_pred_classes == val_true_classes)
 
     print(
         colorama.Style.BRIGHT + colorama.Fore.GREEN
@@ -130,7 +131,7 @@ def predict_model():
     print(f"Real data labels: \n{y_val[:5]}\n{y_val_encoded[:5].tolist()}\n")
     print(f"Predicted probabilities: \n{(y_pred_val[:5].tolist())}\n")
     print(
-        f"Predicted classes rounded: \n{(y_pred_val[:5]> 0.5).astype(int).tolist()}\n"
+        f"Predicted classes via argmax: \n{np.argmax(y_pred_val[:5], axis=1).tolist()}\n"
     )
     print(
         f"{colorama.Style.BRIGHT}Validation Accuracy for the entire dataset:{colorama.Style.BRIGHT + colorama.Fore.GREEN} {val_acc:.4f}"

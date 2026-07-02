@@ -86,9 +86,13 @@ def train_model(hidden_layers: list = [24, 24], epochs: int = 6000, learning_rat
         y_pred_val = mlp.forward(X_val)
         val_loss = categorical_cross_entropy(y_val, y_pred_val)
 
-        # Calculate accuracy for tracking
-        train_acc = np.mean((y_pred_train > 0.5) == y_train)
-        val_acc = np.mean((y_pred_val > 0.5) == y_val)
+        # Calculate accuracy from class indices instead of thresholding probabilities.
+        train_pred_classes = np.argmax(y_pred_train, axis=1)
+        val_pred_classes = np.argmax(y_pred_val, axis=1)
+        train_true_classes = np.argmax(y_train, axis=1)
+        val_true_classes = np.argmax(y_val, axis=1)
+        train_acc = np.mean(train_pred_classes == train_true_classes)
+        val_acc = np.mean(val_pred_classes == val_true_classes)
 
         # Log history
         history["loss"].append(train_loss)
@@ -125,7 +129,7 @@ def plot_learning_curves(history: dict):
     plt.subplot(1, 2, 1)
     plt.plot(epochs, history["loss"], label="Train Loss")
     plt.plot(epochs, history["val_loss"], label="Val Loss")
-    plt.title("Binary Cross-Entropy Loss")
+    plt.title("Categorical Cross-Entropy Loss")
     plt.xlabel("Epochs")
     plt.ylabel("Loss")
     plt.legend()
