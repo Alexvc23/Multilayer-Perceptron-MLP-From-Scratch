@@ -2,22 +2,30 @@ import numpy as np
 import json
 import os
 
-def encode_labels(y)-> np.ndarray:
+
+def encode_labels(y) -> np.ndarray:
     """
-    Converts categorical string labels into numerical binary targets.
-    
-    Why: Multi-layer perceptrons require mathematical tensors for their matrix 
-    multiplications. Also, calculating errors with Binary Cross-Entropy requires 
-    ground truth targets to be strictly numerical values of 1 or 0 (probability).
-    
+    Converts categorical string labels into one-hot encoded binary targets.
+
+    Why: A softmax output layer with categorical cross-entropy expects targets
+    shaped like the network outputs. For this binary task, that means two columns
+    instead of a single scalar label.
+
     Args:
         y (np.ndarray or list): Array of nominal labels (e.g., 'M' and 'B').
-        
+
     Returns:
-        np.ndarray: Array of shape (n_samples,) containing 1s and 0s.
+        np.ndarray: Array of shape (n_samples, 2) where 'M' -> [1, 0] and
+        'B' -> [0, 1].
     """
-    # Using np.where to efficiently map 'M' to 1 and 'B' to 0 across the entire array
-    return np.where(np.array(y) == 'M', 1, 0)
+    # Convert input to a NumPy array for consistent processing
+    labels = np.array(y)
+    # Initialize a zero matrix with two columns for one-hot encoding 
+    # Shape[0] is the number of samples, and 2 is for the two classes (M and B)
+    encoded = np.zeros((labels.shape[0], 2), dtype=int)
+    encoded[labels == 'M', 0] = 1
+    encoded[labels == 'B', 1] = 1
+    return encoded
 
 
 class StandardScaler:
@@ -151,8 +159,9 @@ if __name__ == "__main__":
     # Test Label Encoding
     dummy_labels = np.array(['B', 'M', 'B', 'B', 'M'])
     encoded = encode_labels(dummy_labels)
-    assert np.all(encoded == np.array([0, 1, 0, 0, 1]))
-    print("[OK] Label Encoding (M=1, B=0)")
+    assert encoded.shape == (5, 2)
+    assert np.all(encoded == np.array([[0, 1], [1, 0], [0, 1], [0, 1], [1, 0]]))
+    print("[OK] Label Encoding (M=[1,0], B=[0,1])")
     
     # Test Standardization
     dummy_X = np.array([
