@@ -56,6 +56,8 @@ def train_model(hidden_layers: list = [24, 24], epochs: int = 6000, learning_rat
     # 3. Initialize Network
     # Topology: [Input (30 features), Hidden1 (24), Hidden2 (24), Output (2)]
     # We use two hidden layers to satisfy architectural requirements.
+    # input layer is set by default to the number of features in the dataset (30).
+    # and the output layer is set to 2 for binary classification (M vs B) using softmax.
     topology = [X_train.shape[1]] + hidden_layers + [2]
     mlp = MultilayerPerceptron(
         topology, hidden_activation="relu", output_activation="softmax"
